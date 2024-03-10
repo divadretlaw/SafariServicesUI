@@ -5,11 +5,11 @@
 //  Created by David Walter on 04.07.23.
 //
 
-import SwiftUI
-import SafariServices
-import WindowSceneReader
-
 #if os(iOS)
+import SwiftUI
+import WindowSceneReader
+import SafariServices
+
 public extension View {
     /// Presents a `SFSafariViewController` using the given url.
     ///

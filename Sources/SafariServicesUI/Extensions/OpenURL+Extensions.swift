@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SafariServices
 
 public extension View {
     /// Registers a handler to invoke when a open action is triggered.

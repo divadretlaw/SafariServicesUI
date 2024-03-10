@@ -5,11 +5,11 @@
 //  Created by David Walter on 30.05.23.
 //
 
+#if os(iOS)
 import SwiftUI
 import URLExtensions
 import SafariServices
 
-#if os(iOS)
 public extension OpenURLAction.Result {
     /// The handler tries to open the original URL with `SFSafariViewController`.
     ///
