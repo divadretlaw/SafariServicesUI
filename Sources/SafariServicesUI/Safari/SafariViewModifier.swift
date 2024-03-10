@@ -9,7 +9,7 @@ import SwiftUI
 import SafariServices
 import WindowSceneReader
 
-#if os(iOS) || os(visionOS)
+#if os(iOS)
 public extension View {
     /// Presents a `SFSafariViewController` using the given url.
     ///

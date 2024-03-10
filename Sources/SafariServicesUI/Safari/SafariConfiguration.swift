@@ -5,7 +5,7 @@
 //  Created by David Walter on 04.07.23.
 //
 
-#if os(iOS) || os(visionOS)
+#if os(iOS)
 import Foundation
 import UIKit
 import SwiftUI

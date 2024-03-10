@@ -9,7 +9,7 @@ import SwiftUI
 import URLExtensions
 import SafariServices
 
-#if os(iOS) || os(visionOS)
+#if os(iOS)
 public extension OpenURLAction.Result {
     /// The handler tries to open the original URL with `SFSafariViewController`.
     ///

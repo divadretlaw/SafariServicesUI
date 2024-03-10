@@ -5,14 +5,14 @@
 //  Created by David Walter on 04.07.23.
 //
 
-#if os(iOS) || os(visionOS)
+#if os(iOS)
 import SwiftUI
 import SafariServices
 import UIKit
 import Combine
 
 /// Manages the presented `SFSafariViewController`s and their respective `UIWindow`s
-@MainActor final class SafariManager: NSObject, ObservableObject, SFSafariViewControllerDelegate {
+@MainActor final class SafariManager: NSObject, ObservableObject {
     static let shared = SafariManager()
     
     var safariDidFinish: PassthroughSubject<SFSafariViewController, Never>
