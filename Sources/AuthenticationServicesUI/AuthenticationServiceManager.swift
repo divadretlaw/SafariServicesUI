@@ -29,24 +29,12 @@ import AuthenticationServices
     func createSession(for windowScene: UIWindowScene, with configuration: AuthenticationSessionConfiguration) {
         self.windowScene = windowScene
         
-        let session: ASWebAuthenticationSession
-        if #available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, *) {
-            session = ASWebAuthenticationSession(url: configuration.url, callback: configuration.callback.create()) { [weak self] url, error in
-                guard let self else { return }
-                Task { @MainActor in
-                    self.handleCallback(url: url, error: error)
-                }
-            }
-            session.additionalHeaderFields = configuration.additionalHeaderFields
-        } else {
-            session = ASWebAuthenticationSession(url: configuration.url, callbackURLScheme: configuration.callback.rawValue) { [weak self] url, error in
-                guard let self else { return }
-                Task { @MainActor in
-                    self.handleCallback(url: url, error: error)
-                }
+        let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
+            guard let self else { return }
+            Task { @MainActor in
+                self.handleCallback(url: url, error: error)
             }
         }
-        
         #if !os(tvOS)
         session.presentationContextProvider = self
         session.prefersEphemeralWebBrowserSession = configuration.prefersEphemeralWebBrowserSession
@@ -55,24 +43,12 @@ import AuthenticationServices
     }
     #else
     func createSession(with configuration: AuthenticationSessionConfiguration) {        
-        let session: ASWebAuthenticationSession
-        if #available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, *) {
-            session = ASWebAuthenticationSession(url: configuration.url, callback: configuration.callback.create()) { [weak self] url, error in
-                guard let self else { return }
-                Task { @MainActor in
-                    self.handleCallback(url: url, error: error)
-                }
-            }
-            session.additionalHeaderFields = configuration.additionalHeaderFields
-        } else {
-            session = ASWebAuthenticationSession(url: configuration.url, callbackURLScheme: configuration.callback.rawValue) { [weak self] url, error in
-                guard let self else { return }
-                Task { @MainActor in
-                    self.handleCallback(url: url, error: error)
-                }
+        let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
+            guard let self else { return }
+            Task { @MainActor in
+                self.handleCallback(url: url, error: error)
             }
         }
-        
         #if !os(tvOS) && !os(watchOS)
         session.presentationContextProvider = self
         #endif

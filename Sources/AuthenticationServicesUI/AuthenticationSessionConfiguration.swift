@@ -11,7 +11,7 @@ import AuthenticationServices
 @available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, *)
 public struct AuthenticationSessionConfiguration: Sendable {
     let url: URL
-    let callback: Callback
+    let callback: Callback?
     let additionalHeaderFields: [String: String]?
     let prefersEphemeralWebBrowserSession: Bool
     
@@ -24,8 +24,7 @@ public struct AuthenticationSessionConfiguration: Sendable {
         if let callbackURLScheme {
             self.callback = .customScheme(callbackURLScheme)
         } else {
-            /// (Mis)Using ``Callback/https`` because it will result in `nil`
-            self.callback = .https(host: "", path: "")
+            self.callback = nil
         }
         self.additionalHeaderFields = nil
         self.prefersEphemeralWebBrowserSession = prefersEphemeralWebBrowserSession
