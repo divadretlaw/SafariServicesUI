@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, *)
 public struct AuthenticationSessionButton<Label>: View where Label: View {
     let configuration: AuthenticationSessionConfiguration
     let label: Label
@@ -38,6 +39,7 @@ public struct AuthenticationSessionButton<Label>: View where Label: View {
     }
 }
 
+@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, *)
 public extension AuthenticationSessionButton where Label == Text {
     init(
         _ title: Text,
