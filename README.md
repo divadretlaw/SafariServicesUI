@@ -4,6 +4,8 @@
 
 Enable web views and services in your app.
 
+## Safari
+
 ### `OpenURLAction`
 
 #### `safari(_:)`
@@ -76,6 +78,26 @@ You can also provide an optional configuration
 ```swift
 .safari(url: $showURL) { configuration in
     // Apply your configuration to `configuration`
+}
+```
+
+## Authentication Services
+
+Present a authentication session via
+
+```swift
+.authenticationSession(isPresented: $isPresented, configuration: AuthenticationSessionConfiguration) { result in
+    // Handle result
+}
+```
+
+or use the predefined `Button`
+
+```swift
+AuthenticationSessionButton(configuration: AuthenticationSessionConfiguration) {
+    Text("Authenticate")
+} onCompletion: { result in
+    // Handle result
 }
 ```
 

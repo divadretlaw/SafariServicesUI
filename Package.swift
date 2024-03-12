@@ -13,7 +13,12 @@ let package = Package(
     products: [
         .library(
             name: "SafariServicesUI",
-            targets: ["SafariServicesUI"]),
+            targets: ["SafariServicesUI"]
+        ),
+        .library(
+            name: "AuthenticationServicesUI",
+            targets: ["AuthenticationServicesUI"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/divadretlaw/URL-Extensions.git", from: "1.0.0"),
@@ -26,6 +31,10 @@ let package = Package(
                 .product(name: "URLExtensions", package: "URL-Extensions"),
                 .product(name: "WindowSceneReader", package: "WindowSceneReader")
             ]
+        ),
+        .target(
+            name: "AuthenticationServicesUI",
+            dependencies: ["SafariServicesUI"]
         )
     ]
 )
