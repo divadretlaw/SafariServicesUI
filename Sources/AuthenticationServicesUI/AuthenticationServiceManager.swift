@@ -12,7 +12,7 @@ import UIKit
 import Combine
 import AuthenticationServices
 
-@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, *)
+@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, visionOS 1.0, *)
 @MainActor final class AuthenticationServiceManager: NSObject, ObservableObject {
     @Published var session: ASWebAuthenticationSession?
     #if canImport(UIKit) && !os(watchOS)

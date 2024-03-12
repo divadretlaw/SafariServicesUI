@@ -8,7 +8,7 @@
 import Foundation
 import AuthenticationServices
 
-@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, *)
+@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, visionOS 1.0, *)
 public struct AuthenticationSessionConfiguration: Sendable {
     let url: URL
     let callback: Callback?

@@ -9,7 +9,7 @@ import SwiftUI
 import WindowSceneReader
 import AuthenticationServices
 
-@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, *)
+@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, visionOS 1.0, *)
 public extension View {
     @MainActor func authenticationSession(
         isPresented: Binding<Bool>,
@@ -26,7 +26,7 @@ public extension View {
     }
 }
 
-@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, *)
+@available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, visionOS 1.0, *)
 struct AuthenticationServicesViewModifier: ViewModifier {
     @Binding var isPresented: Bool
     let configuration: AuthenticationSessionConfiguration
