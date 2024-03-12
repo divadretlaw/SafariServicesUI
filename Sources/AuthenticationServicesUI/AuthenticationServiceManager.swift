@@ -18,7 +18,7 @@ import AuthenticationServices
     #if canImport(UIKit) && !os(watchOS)
     var windowScene: UIWindowScene?
     #endif
-    var didFinish: PassthroughSubject<Result<URL, Error>, Never>
+    let didFinish: PassthroughSubject<Result<URL, Error>, Never>
     
     override init() {
         self.didFinish = PassthroughSubject()
@@ -37,6 +37,7 @@ import AuthenticationServices
                     self.handleCallback(url: url, error: error)
                 }
             }
+            session.additionalHeaderFields = configuration.additionalHeaderFields
         } else {
             session = ASWebAuthenticationSession(url: configuration.url, callbackURLScheme: configuration.callback.rawValue) { [weak self] url, error in
                 guard let self else { return }
@@ -46,8 +47,9 @@ import AuthenticationServices
             }
         }
         
-        #if !os(tvOS) && !os(watchOS)
+        #if !os(tvOS)
         session.presentationContextProvider = self
+        session.prefersEphemeralWebBrowserSession = configuration.prefersEphemeralWebBrowserSession
         #endif
         self.session = session
     }
@@ -61,6 +63,7 @@ import AuthenticationServices
                     self.handleCallback(url: url, error: error)
                 }
             }
+            session.additionalHeaderFields = configuration.additionalHeaderFields
         } else {
             session = ASWebAuthenticationSession(url: configuration.url, callbackURLScheme: configuration.callback.rawValue) { [weak self] url, error in
                 guard let self else { return }
@@ -73,6 +76,7 @@ import AuthenticationServices
         #if !os(tvOS) && !os(watchOS)
         session.presentationContextProvider = self
         #endif
+        session.prefersEphemeralWebBrowserSession = configuration.prefersEphemeralWebBrowserSession
         self.session = session
     }
     #endif

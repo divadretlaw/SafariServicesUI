@@ -12,10 +12,13 @@ import AuthenticationServices
 public struct AuthenticationSessionConfiguration: Sendable {
     let url: URL
     let callback: Callback
+    let additionalHeaderFields: [String: String]?
+    let prefersEphemeralWebBrowserSession: Bool
     
     public init(
         url: URL,
-        callbackURLScheme: String?
+        callbackURLScheme: String?,
+        prefersEphemeralWebBrowserSession: Bool = false
     ) {
         self.url = url
         if let callbackURLScheme {
@@ -24,15 +27,21 @@ public struct AuthenticationSessionConfiguration: Sendable {
             /// (Mis)Using ``Callback/https`` because it will result in `nil`
             self.callback = .https(host: "", path: "")
         }
+        self.additionalHeaderFields = nil
+        self.prefersEphemeralWebBrowserSession = prefersEphemeralWebBrowserSession
     }
     
     @available(iOS 17.4, *)
     public init(
         url: URL,
-        callback: AuthenticationSessionConfiguration.Callback
+        callback: AuthenticationSessionConfiguration.Callback,
+        additionalHeaderFields: [String: String]? = nil,
+        prefersEphemeralWebBrowserSession: Bool = false
     ) {
         self.url = url
         self.callback = callback
+        self.additionalHeaderFields = additionalHeaderFields
+        self.prefersEphemeralWebBrowserSession = prefersEphemeralWebBrowserSession
     }
 
     public enum Callback: Sendable {
