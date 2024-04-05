@@ -30,7 +30,7 @@ public struct AuthenticationSessionConfiguration: Sendable {
         self.prefersEphemeralWebBrowserSession = prefersEphemeralWebBrowserSession
     }
     
-    @available(iOS 17.4, *)
+    @available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, visionOS 1.1, *)
     public init(
         url: URL,
         callback: AuthenticationSessionConfiguration.Callback,
@@ -56,7 +56,7 @@ public struct AuthenticationSessionConfiguration: Sendable {
             }
         }
         
-        @available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, *)
+        @available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, visionOS 1.1, *)
         func create() -> ASWebAuthenticationSession.Callback {
             switch self {
             case let .customScheme(customScheme):
