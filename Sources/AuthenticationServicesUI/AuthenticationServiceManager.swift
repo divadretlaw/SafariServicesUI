@@ -26,7 +26,7 @@ import AuthenticationServices
     }
     
     #if canImport(UIKit) && !os(watchOS)
-    func createSession(for windowScene: UIWindowScene, with configuration: AuthenticationSessionConfiguration) {
+    func createSession(for windowScene: UIWindowScene?, with configuration: AuthenticationSessionConfiguration) {
         self.windowScene = windowScene
         
         let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
@@ -41,8 +41,9 @@ import AuthenticationServices
         #endif
         self.session = session
     }
-    #else
-    func createSession(with configuration: AuthenticationSessionConfiguration) {        
+    #endif
+    
+    func createSession(with configuration: AuthenticationSessionConfiguration) {
         let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
             guard let self else { return }
             Task { @MainActor in
@@ -51,11 +52,10 @@ import AuthenticationServices
         }
         #if !os(tvOS) && !os(watchOS)
         session.presentationContextProvider = self
-        #endif
         session.prefersEphemeralWebBrowserSession = configuration.prefersEphemeralWebBrowserSession
+        #endif
         self.session = session
     }
-    #endif
     
     func handleCallback(url: URL?, error: (any Error)?) {
         if let error {

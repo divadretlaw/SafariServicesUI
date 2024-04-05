@@ -35,61 +35,46 @@ struct AuthenticationServicesViewModifier: ViewModifier {
     @StateObject private var manager = AuthenticationServiceManager()
     
     func body(content: Content) -> some View {
-        #if canImport(UIKit) && !os(watchOS)
         content
+            #if canImport(UIKit) && !os(watchOS)
             .background {
                 WindowSceneReader { windowScene in
                     Color.clear
                         .onChange(of: isPresented) { isPresented in
                             guard isPresented else { return }
-                            // Show session
                             manager.createSession(for: windowScene, with: configuration)
                         }
                         .onAppear {
                             guard isPresented else { return }
-                            // Show session
                             manager.createSession(for: windowScene, with: configuration)
-                        }
-                        .onDisappear {
-                            guard let session = manager.session else { return }
-                            #if !os(tvOS)
-                            session.cancel()
-                            #endif
-                        }
-                        .onReceive(manager.$session) { session in
-                            guard let session else { return }
-                            session.start()
-                        }
-                        .onReceive(manager.didFinish) { result in
-                            completionHandler(result)
-                            isPresented = false
                         }
                 }
             }
-        #else
-        content
+            #else
             .onChange(of: isPresented) { isPresented in
                 guard isPresented else { return }
-                // Show session
                 manager.createSession(with: configuration)
             }
             .onAppear {
                 guard isPresented else { return }
-                // Show session
                 manager.createSession(with: configuration)
             }
+            #endif
             .onDisappear {
                 guard let session = manager.session else { return }
+                #if !os(tvOS)
                 session.cancel()
+                #endif
             }
             .onReceive(manager.$session) { session in
                 guard let session else { return }
-                session.start()
+                if !session.start() {
+                    isPresented = false
+                }
             }
             .onReceive(manager.didFinish) { result in
                 completionHandler(result)
                 isPresented = false
             }
-        #endif
     }
 }
