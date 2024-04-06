@@ -9,6 +9,7 @@ import Foundation
 import AuthenticationServices
 
 @available(iOS 12.0, macOS 10, tvOS 16.0, watchOS 6.2, visionOS 1.0, *)
+/// Configuration values for an authentication session
 public struct AuthenticationSessionConfiguration: Sendable {
     let url: URL
     let callback: Callback?
@@ -43,8 +44,17 @@ public struct AuthenticationSessionConfiguration: Sendable {
         self.prefersEphemeralWebBrowserSession = prefersEphemeralWebBrowserSession
     }
 
+    /// An object used to evaluate navigation events in an authentication session.
+    /// When the session navigates to a matching URL, it will pass the URL to the session completion handler.
     public enum Callback: Sendable {
+        /// Creates a callback object that matches against URLs with the given custom scheme.
         case customScheme(_ customScheme: String)
+        /// Creates a callback object that matches against HTTPS URLs with the given host and path.
+        ///
+        /// - Parameters:
+        ///     - host: The host that the app expects in the callback URL.
+        ///             The host must be associated with the app using associated web credentials domains.
+        ///     - path: The path that the app expects in the callback URL.
         case https(host: String, path: String)
         
         var rawValue: String? {
@@ -57,6 +67,7 @@ public struct AuthenticationSessionConfiguration: Sendable {
         }
         
         @available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, visionOS 1.1, *)
+        /// Create the underlying `ASWebAuthenticationSession.Callback`
         func create() -> ASWebAuthenticationSession.Callback {
             switch self {
             case let .customScheme(customScheme):

@@ -10,6 +10,11 @@ import AuthenticationServices
 
 @available(iOS 16.4, macOS 13.3, watchOS 9.4, tvOS 16.4, *)
 extension WebAuthenticationSession {
+    /// Start a web authentication session.
+    /// 
+    /// - Parameter configuration: The configuration to authenticate with.
+    ///
+    /// - Returns: The URL returned by the authentication provider.
     public func authenticate(with configuration: AuthenticationSessionConfiguration) async throws -> URL {
         if #available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, visionOS 1.1, *), let callback = configuration.callback {
             return try await authenticate(
