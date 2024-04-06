@@ -70,16 +70,18 @@ import AuthenticationServices
 
 #if !os(tvOS) && !os(watchOS)
 extension AuthenticationServiceManager: ASWebAuthenticationPresentationContextProviding {
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        #if canImport(UIKit)
-        if let windowScene {
-            ASPresentationAnchor(windowScene: windowScene)
-        } else {
+    nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        MainActor.runSync {
+            #if canImport(UIKit)
+            if let windowScene {
+                ASPresentationAnchor(windowScene: windowScene)
+            } else {
+                ASPresentationAnchor()
+            }
+            #else
             ASPresentationAnchor()
+            #endif
         }
-        #else
-        ASPresentationAnchor()
-        #endif
     }
 }
 #endif

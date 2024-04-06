@@ -46,23 +46,13 @@ private struct AuthenticationServicesViewModifier: ViewModifier {
             .background {
                 WindowSceneReader { windowScene in
                     Color.clear
-                        .onChange(of: isPresented) { isPresented in
-                            guard isPresented else { return }
-                            manager.createSession(for: windowScene, with: configuration)
-                        }
-                        .onAppear {
-                            guard isPresented else { return }
+                        .onTrigger(of: isPresented) {
                             manager.createSession(for: windowScene, with: configuration)
                         }
                 }
             }
             #else
-            .onChange(of: isPresented) { isPresented in
-                guard isPresented else { return }
-                manager.createSession(with: configuration)
-            }
-            .onAppear {
-                guard isPresented else { return }
+            .onTrigger(of: isPresented) {
                 manager.createSession(with: configuration)
             }
             #endif
