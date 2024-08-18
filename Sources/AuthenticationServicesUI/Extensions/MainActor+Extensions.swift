@@ -39,7 +39,7 @@ extension MainActor {
     /// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
     /// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     /// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-    static func runUnsafely<T>(_ body: @MainActor () throws -> T) rethrows -> T {
+    static func runUnsafely<T>(_ body: @MainActor () throws -> T) rethrows -> T where T: Sendable {
         if #available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *) {
             return try MainActor.assumeIsolated(body)
         } else {
@@ -51,7 +51,7 @@ extension MainActor {
     }
     
     @_unavailableFromAsync
-    static func runSync<T>(_ body: @MainActor () throws -> T) rethrows -> T {
+    static func runSync<T>(_ body: @MainActor () throws -> T) rethrows -> T where T: Sendable {
         if Thread.isMainThread {
             return try MainActor.runUnsafely(body)
         } else {

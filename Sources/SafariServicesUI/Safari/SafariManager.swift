@@ -15,14 +15,8 @@ import Combine
 @MainActor final class SafariManager: NSObject, ObservableObject, SFSafariViewControllerDelegate {
     static let shared = SafariManager()
     
-    var safariDidFinish: PassthroughSubject<SFSafariViewController, Never>
-    private var windows: [SFSafariViewController: UIWindow]
-    
-    override private init() {
-        safariDidFinish = .init()
-        windows = [:]
-        super.init()
-    }
+    var safariDidFinish = PassthroughSubject<SFSafariViewController, Never>()
+    private var windows: [SFSafariViewController: UIWindow] = [:]
     
     @discardableResult
     func present(

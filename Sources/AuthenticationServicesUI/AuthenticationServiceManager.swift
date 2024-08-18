@@ -18,12 +18,7 @@ import AuthenticationServices
     #if canImport(UIKit) && !os(watchOS)
     var windowScene: UIWindowScene?
     #endif
-    let didFinish: PassthroughSubject<Result<URL, Error>, Never>
-    
-    override init() {
-        self.didFinish = PassthroughSubject()
-        super.init()
-    }
+    let didFinish = PassthroughSubject<Result<URL, Error>, Never>()
     
     #if canImport(UIKit) && !os(watchOS)
     func createSession(for windowScene: UIWindowScene?, with configuration: AuthenticationSessionConfiguration) {
