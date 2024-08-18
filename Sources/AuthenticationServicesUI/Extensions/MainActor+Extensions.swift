@@ -8,55 +8,16 @@
 import Foundation
 
 extension MainActor {
-    @_unavailableFromAsync
-    /// https://github.com/mattmassicotte/MainOffender
+    /// Execute the given body closure on the main actor without enforcing MainActor isolation.
     ///
-    /// BSD 3-Clause License
-    ///
-    /// Copyright (c) 2023, Matt Massicotte
-    ///
-    /// Redistribution and use in source and binary forms, with or without
-    /// modification, are permitted provided that the following conditions are met:
-    ///
-    /// 1. Redistributions of source code must retain the above copyright notice, this
-    ///    list of conditions and the following disclaimer.
-    ///
-    /// 2. Redistributions in binary form must reproduce the above copyright notice,
-    ///    this list of conditions and the following disclaimer in the documentation
-    ///    and/or other materials provided with the distribution.
-    ///
-    /// 3. Neither the name of the copyright holder nor the names of its
-    ///    contributors may be used to endorse or promote products derived from
-    ///    this software without specific prior written permission.
-    ///
-    /// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    /// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    /// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    /// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    /// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    /// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    /// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    /// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    /// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    /// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-    static func runUnsafely<T>(_ body: @MainActor () throws -> T) rethrows -> T where T: Sendable {
-        if #available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *) {
-            return try MainActor.assumeIsolated(body)
-        } else {
-            dispatchPrecondition(condition: .onQueue(.main))
-            return try withoutActuallyEscaping(body) { fn in
-                try unsafeBitCast(fn, to: (() throws -> T).self)()
-            }
-        }
-    }
-    
+    /// The method will be dispatched in sync to the main-thread if its on a non-main thread.
     @_unavailableFromAsync
     static func runSync<T>(_ body: @MainActor () throws -> T) rethrows -> T where T: Sendable {
         if Thread.isMainThread {
-            return try MainActor.runUnsafely(body)
+            try MainActor.assumeIsolated(body)
         } else {
-            return try DispatchQueue.main.sync {
-                return try MainActor.runUnsafely(body)
+            try DispatchQueue.main.sync {
+                try MainActor.assumeIsolated(body)
             }
         }
     }
