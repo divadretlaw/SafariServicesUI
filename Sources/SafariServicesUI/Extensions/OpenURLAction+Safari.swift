@@ -40,7 +40,7 @@ public extension OpenURLAction.Result {
         }
         
         guard rootViewController.presentedViewController == nil else {
-            return .safariWindow(url, in: scene)
+            return safariWindow(url, in: scene)
         }
         
         rootViewController.present(safari, animated: true)
@@ -73,6 +73,11 @@ public extension OpenURLAction.Result {
             return .systemAction
         }
         
+        guard rootViewController.presentedViewController == nil else {
+            // rootViewController is already presenting, so we show Safari in a window instead
+            return .safariWindow(url, in: scene, configure: configure)
+        }
+        
         var config = SafariConfiguration()
         configure(&config)
         
@@ -86,11 +91,6 @@ public extension OpenURLAction.Result {
             safari.modalPresentationStyle = config.modalPresentationStyle
         }
         safari.overrideUserInterfaceStyle = config.overrideUserInterfaceStyle
-        
-        guard rootViewController.presentedViewController == nil else {
-            // rootViewController is already presenting, so we show Safari in a window instead
-            return .safariWindow(url, in: scene)
-        }
         
         rootViewController.present(safari, animated: true)
         return .handled
@@ -112,15 +112,11 @@ public extension OpenURLAction.Result {
             return .systemAction
         }
         
-        guard let windowScene = windowScene else {
-            return .safari(url)
+        guard let windowScene else {
+            return safari(url)
         }
         
-        let safari = SFSafariViewController(url: url)
-        
-        SafariManager.shared.present(safari, on: windowScene)
-        
-        return .handled
+        return safariWindow(url, in: windowScene)
     }
     
     /// The handler tries to open the original URL with `SFSafariViewController`.
@@ -141,8 +137,37 @@ public extension OpenURLAction.Result {
             return .systemAction
         }
         
-        guard let windowScene = windowScene else {
-            return .safari(url)
+        guard let windowScene else {
+            return safari(url)
+        }
+        
+        return safariWindow(url, in: windowScene, configure: configure)
+    }
+}
+
+extension OpenURLAction.Result {
+    @MainActor static func safariWindow(
+        _ url: URL,
+        in windowScene: UIWindowScene
+    ) -> Self {
+        guard url.supportsSafari else {
+            return .systemAction
+        }
+        
+        let safari = SFSafariViewController(url: url)
+        
+        SafariManager.shared.present(safari, on: windowScene)
+        
+        return .handled
+    }
+    
+    @MainActor static func safariWindow(
+        _ url: URL,
+        in windowScene: UIWindowScene,
+        configure: (inout SafariConfiguration) -> Void
+    ) -> Self {
+        guard url.supportsSafari else {
+            return .systemAction
         }
         
         var config = SafariConfiguration()
