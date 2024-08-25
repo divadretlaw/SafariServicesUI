@@ -57,7 +57,7 @@ public extension OpenURLAction.Result {
     /// asks the system to open the original URL.
     @MainActor static func safari(
         _ url: URL,
-        configure: (inout SafariConfiguration) -> Void
+        configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
     ) -> Self {
         guard url.supportsSafari else {
             return .systemAction
@@ -131,7 +131,7 @@ public extension OpenURLAction.Result {
     @MainActor static func safariWindow(
         _ url: URL,
         in windowScene: UIWindowScene?,
-        configure: (inout SafariConfiguration) -> Void
+        configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
     ) -> Self {
         guard url.supportsSafari else {
             return .systemAction
@@ -164,7 +164,7 @@ extension OpenURLAction.Result {
     @MainActor static func safariWindow(
         _ url: URL,
         in windowScene: UIWindowScene,
-        configure: (inout SafariConfiguration) -> Void
+        configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
     ) -> Self {
         guard url.supportsSafari else {
             return .systemAction

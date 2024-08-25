@@ -32,7 +32,10 @@ public extension View {
     ///   - configure: A closure to configure the presentation of `SFSafariViewController`.
     ///
     /// The `SFSafariViewController` will be displayed in its own `UIWindow` within the current view's `UIWindowScene`.
-    @MainActor func safari(url: Binding<URL?>, configure: @Sendable @escaping (inout SafariConfiguration) -> Void) -> some View {
+    @MainActor func safari(
+        url: Binding<URL?>,
+        configure: @MainActor @Sendable @escaping (inout SafariConfiguration) -> Void
+    ) -> some View {
         modifier(SafariViewModifier(url: url, configure: configure))
     }
 }

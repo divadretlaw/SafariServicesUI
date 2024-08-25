@@ -12,7 +12,7 @@ import SwiftUI
 import SafariServices
 
 /// Configuration for `SFSafariViewController`
-public struct SafariConfiguration {
+@MainActor public struct SafariConfiguration: Sendable {
     /// A configuration object that defines how a Safari view controller should be initialized.
     public var configuration: SFSafariViewController.Configuration
     /// The color to tint the background of the navigation bar and the toolbar.
