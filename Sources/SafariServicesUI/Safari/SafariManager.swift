@@ -48,7 +48,7 @@ import Combine
     
     // MARK: - SFSafariViewControllerDelegate
     
-    nonisolated internal func safariViewControllerDidFinish(_ safari: SFSafariViewController) {
+    nonisolated func safariViewControllerDidFinish(_ safari: SFSafariViewController) {
         Task { @MainActor in
             let window = safari.view.window
             window?.resignKey()
