@@ -45,6 +45,8 @@ struct SafariViewModifier: ViewModifier {
     var configure: ((inout SafariConfiguration) -> Void)?
     
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.safariConfiguration) private var safariConfiguration
+    
     @ObservedObject private var safariManager = SafariManager.shared
     
     @State private var presentingSafari: SFSafariViewController?
@@ -72,7 +74,7 @@ struct SafariViewModifier: ViewModifier {
     }
     
     func showSafari(with url: URL, on windowScene: UIWindowScene) {
-        var config = SafariConfiguration()
+        var config = safariConfiguration ?? SafariConfiguration()
         configure?(&config)
         
         let safari = SFSafariViewController(url: url, configuration: config.configuration)

@@ -35,6 +35,22 @@ import SafariServices
         self.overrideUserInterfaceStyle = .unspecified
     }
     
+    public init(
+        configuration: SFSafariViewController.Configuration = SFSafariViewController.Configuration(),
+        preferredBarTintColor: UIColor? = nil,
+        preferredControlTintColor: UIColor? = .tintColor,
+        dismissButtonStyle: SFSafariViewController.DismissButtonStyle = .done,
+        modalPresentationStyle: UIModalPresentationStyle = .automatic,
+        overrideUserInterfaceStyle: UIUserInterfaceStyle = .unspecified
+    ) {
+        self.configuration = configuration
+        self.preferredBarTintColor = preferredBarTintColor
+        self.preferredControlTintColor = preferredControlTintColor
+        self.dismissButtonStyle = dismissButtonStyle
+        self.modalPresentationStyle = modalPresentationStyle
+        self.overrideUserInterfaceStyle = overrideUserInterfaceStyle
+    }
+    
     func userInterfaceStyle(with colorScheme: ColorScheme) -> UIUserInterfaceStyle {
         switch overrideUserInterfaceStyle {
         case .unspecified:
@@ -42,6 +58,17 @@ import SafariServices
         default:
             return overrideUserInterfaceStyle
         }
+    }
+}
+
+private struct SafariConfigurationKey: EnvironmentKey {
+    static let defaultValue: SafariConfiguration? = nil
+}
+
+public extension EnvironmentValues {
+    var safariConfiguration: SafariConfiguration? {
+        get { self[SafariConfigurationKey.self] }
+        set { self[SafariConfigurationKey.self] = newValue }
     }
 }
 #endif
