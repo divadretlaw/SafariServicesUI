@@ -24,13 +24,15 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/divadretlaw/URL-Extensions.git", from: "1.0.0"),
-        .package(url: "https://github.com/divadretlaw/WindowSceneReader.git", from: "3.0.0")
+        .package(url: "https://github.com/divadretlaw/WindowReader.git", from: "3.0.0"),
+        .package(url: "https://github.com/divadretlaw/WindowSceneReader.git", from: "3.2.0")
     ],
     targets: [
         .target(
             name: "SafariServicesUI",
             dependencies: [
                 .product(name: "URLExtensions", package: "URL-Extensions"),
+                .product(name: "WindowReader", package: "WindowReader"),
                 .product(name: "WindowSceneReader", package: "WindowSceneReader")
             ]
         ),

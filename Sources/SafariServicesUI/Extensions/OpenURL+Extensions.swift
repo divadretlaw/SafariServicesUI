@@ -19,7 +19,7 @@ public extension View {
 }
 
 #if os(iOS) || os(tvOS) || os(visionOS)
-import WindowSceneReader
+import WindowReader
 
 public extension View {
     /// Registers a handler to invoke when a view wants to open a url.
@@ -39,7 +39,7 @@ struct WindowSceneOpenURL: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .readWindow { window in
+            .onWindowChange(initial: true) { window in
                 windowScene = window.windowScene
             }
             .openURL { url in
