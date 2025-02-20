@@ -36,11 +36,15 @@ import Combine
         windowScene: UIWindowScene,
         userInterfaceStyle: UIUserInterfaceStyle
     ) -> (window: UIWindow, viewController: UIViewController) {
-        let window = UIWindow(windowScene: windowScene)
+        let windowLevel = windowScene.nextWindowLevel()
         
-        let viewController = UIViewController()
+        let window = UIWindow(windowScene: windowScene)
+        window.windowLevel = windowLevel
         window.overrideUserInterfaceStyle = userInterfaceStyle
+
+        let viewController = UIViewController()
         window.rootViewController = viewController
+        
         window.makeKeyAndVisible()
         
         return (window, viewController)
@@ -55,6 +59,15 @@ import Combine
             windows[safari] = nil
             safariDidFinish.send(safari)
         }
+    }
+}
+
+private extension UIWindowScene {
+    func nextWindowLevel() -> UIWindow.Level {
+        guard let windowLevel = windows.map(\.windowLevel).max() else {
+            return .normal
+        }
+        return windowLevel + 1
     }
 }
 #endif

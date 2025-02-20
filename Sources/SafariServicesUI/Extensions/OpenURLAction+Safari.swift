@@ -21,16 +21,19 @@ public extension OpenURLAction.Result {
         _ url: URL
     ) -> Self {
         guard url.supportsSafari else {
+            // URL doesn't support Safari. Abort.
             return .systemAction
         }
         
         guard let scene = UIApplication.shared.keyWindowScene else {
+            // No window scene was found. Abort.
             return .systemAction
         }
         
         let window = scene.windows.first { $0.isKeyWindow } ?? scene.windows.first
         
         guard let rootViewController = window?.rootViewController else {
+            // Window has no root view controller. Abort.
             return .systemAction
         }
         
@@ -40,6 +43,7 @@ public extension OpenURLAction.Result {
         }
         
         guard rootViewController.presentedViewController == nil else {
+            // rootViewController is already presenting, so we show Safari in a window instead
             return safariWindow(url, in: scene)
         }
         
@@ -60,16 +64,19 @@ public extension OpenURLAction.Result {
         configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
     ) -> Self {
         guard url.supportsSafari else {
+            // URL doesn't support Safari. Abort.
             return .systemAction
         }
         
         guard let scene = UIApplication.shared.keyWindowScene else {
+            // No window scene was found. Abort.
             return .systemAction
         }
         
         let window = scene.windows.first { $0.isKeyWindow } ?? scene.windows.first
         
         guard let rootViewController = window?.rootViewController else {
+            // Window has no root view controller. Abort.
             return .systemAction
         }
         
@@ -109,6 +116,7 @@ public extension OpenURLAction.Result {
         in windowScene: UIWindowScene?
     ) -> Self {
         guard url.supportsSafari else {
+            // URL doesn't support Safari. Abort.
             return .systemAction
         }
         
@@ -134,6 +142,7 @@ public extension OpenURLAction.Result {
         configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
     ) -> Self {
         guard url.supportsSafari else {
+            // URL doesn't support Safari. Abort.
             return .systemAction
         }
         
@@ -151,6 +160,7 @@ extension OpenURLAction.Result {
         in windowScene: UIWindowScene
     ) -> Self {
         guard url.supportsSafari else {
+            // URL doesn't support Safari. Abort.
             return .systemAction
         }
         
@@ -167,6 +177,7 @@ extension OpenURLAction.Result {
         configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
     ) -> Self {
         guard url.supportsSafari else {
+            // URL doesn't support Safari. Abort.
             return .systemAction
         }
         
@@ -185,7 +196,7 @@ extension OpenURLAction.Result {
     }
 }
 
-extension UIApplication {
+private extension UIApplication {
     /// Returns the first active connected `UIWindowScene`
     var keyWindowScene: UIWindowScene? {
         let scenes = connectedScenes
