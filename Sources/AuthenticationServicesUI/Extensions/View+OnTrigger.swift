@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    func onTrigger(of value: Bool, _ action: @escaping () -> Void) -> some View {
+    @inlinable nonisolated func onTrigger(of value: Bool, _ action: @escaping () -> Void) -> some View {
         self
             #if os(visionOS)
             .onChange(of: value) { _, value in

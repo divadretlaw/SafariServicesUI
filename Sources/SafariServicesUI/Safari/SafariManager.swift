@@ -15,7 +15,7 @@ import Combine
 @MainActor final class SafariManager: NSObject, ObservableObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
     static let shared = SafariManager()
     
-    var safariDidFinish = PassthroughSubject<SFSafariViewController, Never>()
+    let safariDidFinish = PassthroughSubject<SFSafariViewController, Never>()
     private var windows: [SFSafariViewController: UIWindow] = [:]
     
     @discardableResult
@@ -27,7 +27,9 @@ import Combine
         safari.delegate = self
         safari.presentationController?.delegate = self
 
-        windowScene.windows.forEach { $0.endEditing(true) }
+        for window in windowScene.windows {
+            window.endEditing(true)
+        }
 
         let (window, viewController) = setup(windowScene: windowScene, userInterfaceStyle: userInterfaceStyle)
         windows[safari] = window
@@ -37,7 +39,7 @@ import Combine
         }
 
         if safari.isModalInPresentation {
-            UIView.animate(withDuration: 0.3) {
+            UIView.defaultAnimation {
                 viewController.present(SafariHostingController(safari: safari), animated: true)
                 window.backgroundColor = UIColor(white: 0.51, alpha: 0.8)
             }
@@ -62,14 +64,16 @@ import Combine
         window.rootViewController = viewController
         window.makeKeyAndVisible()
         // Hide the default shadow
-        window.subviews.forEach { $0.isHidden = true }
+        for subview in window.subviews {
+            subview.isHidden = true
+        }
 
         return (window, viewController)
     }
 
     private func dismiss(safari: SFSafariViewController) {
         let window = safari.view.window
-        UIView.animate(withDuration: 0.3) {
+        UIView.defaultAnimation {
             window?.backgroundColor = nil
         }
         window?.resignKey()
@@ -99,6 +103,16 @@ private extension UIWindowScene {
             return .normal
         }
         return windowLevel + 1
+    }
+}
+
+private extension UIView {
+    static func defaultAnimation(animations: @escaping () -> Void) {
+        if #available(iOS 18.0, *) {
+            UIView.animate(.default, changes: animations)
+        } else {
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: animations)
+        }
     }
 }
 #endif

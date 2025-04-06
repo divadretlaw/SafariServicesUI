@@ -16,6 +16,11 @@ public struct AuthenticationSessionConfiguration: Sendable {
     let additionalHeaderFields: [String: String]?
     let prefersEphemeralWebBrowserSession: Bool
     
+    /// Create a authentication session configuration
+    /// - Parameters:
+    ///   - url: A URL with the http or https scheme pointing to the authentication webpage.
+    ///   - callbackURLScheme: The custom URL scheme that the app expects in the callback URL.
+    ///   - prefersEphemeralWebBrowserSession: A Boolean value that indicates whether the session should ask the browser for a private authentication session.
     public init(
         url: URL,
         callbackURLScheme: String?,
@@ -31,6 +36,14 @@ public struct AuthenticationSessionConfiguration: Sendable {
         self.prefersEphemeralWebBrowserSession = prefersEphemeralWebBrowserSession
     }
     
+    /// Create a authentication session configuration
+    /// - Parameters:
+    ///   - url: A URL with the http or https scheme pointing to the authentication webpage.
+    ///   - callback: An object used to evaluate navigation events in an authentication session.
+    ///               When the session navigates to a matching URL, it will pass the URL to the session completion handler.
+    ///   - additionalHeaderFields: A dictionary containing additional header fields to send when loading the initial URL.
+    ///                             All header field names must start with the "X-" prefix.
+    ///   - prefersEphemeralWebBrowserSession: A Boolean value that indicates whether the session should ask the browser for a private authentication session.
     @available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, visionOS 1.1, *)
     public init(
         url: URL,

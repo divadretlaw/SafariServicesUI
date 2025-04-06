@@ -26,9 +26,7 @@ import AuthenticationServices
         
         let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
             guard let self else { return }
-            Task { @MainActor in
-                self.handleCallback(url: url, error: error)
-            }
+            self.handleCallback(url: url, error: error)
         }
         #if !os(tvOS)
         session.presentationContextProvider = self
@@ -41,9 +39,7 @@ import AuthenticationServices
     func createSession(with configuration: AuthenticationSessionConfiguration) {
         let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
             guard let self else { return }
-            Task { @MainActor in
-                self.handleCallback(url: url, error: error)
-            }
+            self.handleCallback(url: url, error: error)
         }
         #if !os(tvOS) && !os(watchOS)
         session.presentationContextProvider = self
@@ -65,18 +61,16 @@ import AuthenticationServices
 
 #if !os(tvOS) && !os(watchOS)
 extension AuthenticationServiceManager: ASWebAuthenticationPresentationContextProviding {
-    nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        MainActor.runSync {
-            #if canImport(UIKit)
-            if let windowScene {
-                ASPresentationAnchor(windowScene: windowScene)
-            } else {
-                ASPresentationAnchor()
-            }
-            #else
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        #if canImport(UIKit)
+        if let windowScene {
+            ASPresentationAnchor(windowScene: windowScene)
+        } else {
             ASPresentationAnchor()
-            #endif
         }
+        #else
+        ASPresentationAnchor()
+        #endif
     }
 }
 #endif
