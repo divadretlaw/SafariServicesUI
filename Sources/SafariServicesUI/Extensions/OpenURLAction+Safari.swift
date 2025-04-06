@@ -87,18 +87,16 @@ public extension OpenURLAction.Result {
         
         var config = SafariConfiguration()
         configure(&config)
-        
-        let safari = SFSafariViewController(url: url, configuration: config.configuration)
-        safari.preferredBarTintColor = config.preferredBarTintColor
-        safari.preferredControlTintColor = config.preferredControlTintColor
-        safari.dismissButtonStyle = config.dismissButtonStyle
-        if config.modalPresentationStyle == .automatic, window?.traitCollection.horizontalSizeClass == .regular {
+        let safari = SFSafariViewController(url: url, configuration: config)
+        if safari.modalPresentationStyle == .automatic, window?.traitCollection.horizontalSizeClass == .regular {
             safari.modalPresentationStyle = .pageSheet
-        } else {
-            safari.modalPresentationStyle = config.modalPresentationStyle
         }
-        safari.overrideUserInterfaceStyle = config.overrideUserInterfaceStyle
-        
+
+        if safari.isModalInPresentation {
+            // We can only support 'isModalInPresentation' when Safari is in its own window
+            return .safariWindow(url, in: scene, configure: configure)
+        }
+
         rootViewController.present(safari, animated: true)
         return .handled
     }
@@ -167,7 +165,6 @@ extension OpenURLAction.Result {
         let safari = SFSafariViewController(url: url)
         
         SafariManager.shared.present(safari, on: windowScene)
-        
         return .handled
     }
     
@@ -183,15 +180,9 @@ extension OpenURLAction.Result {
         
         var config = SafariConfiguration()
         configure(&config)
-        
-        let safari = SFSafariViewController(url: url, configuration: config.configuration)
-        safari.preferredBarTintColor = config.preferredBarTintColor
-        safari.preferredControlTintColor = config.preferredControlTintColor
-        safari.dismissButtonStyle = config.dismissButtonStyle
-        safari.overrideUserInterfaceStyle = config.overrideUserInterfaceStyle
-        
+        let safari = SFSafariViewController(url: url, configuration: config)
+
         SafariManager.shared.present(safari, on: windowScene, userInterfaceStyle: config.overrideUserInterfaceStyle)
-        
         return .handled
     }
 }
@@ -213,8 +204,9 @@ struct OpenURLActionSafari_Previews: PreviewProvider {
         Preview()
             .openURL { url, _ in
                 .safari(url) { configuration in
-                    configuration.modalPresentationStyle = .fullScreen
-                    configuration.overrideUserInterfaceStyle = .dark
+                    configuration.preferredControlTintColor = .systemRed
+                    configuration.modalPresentationStyle = .pageSheet
+                    configuration.isModalInPresentation = true
                 }
             }
             .previewDisplayName(".safari")

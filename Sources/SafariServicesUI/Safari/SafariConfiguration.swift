@@ -23,6 +23,8 @@ import SafariServices
     public var dismissButtonStyle: SFSafariViewController.DismissButtonStyle
     /// The presentation style for modal view controllers.
     public var modalPresentationStyle: UIModalPresentationStyle
+    /// A Boolean value indicating whether the view controller enforces a modal behavior.
+    public var isModalInPresentation: Bool
     /// The user interface style adopted by the view controller and all of its children.
     public var overrideUserInterfaceStyle: UIUserInterfaceStyle
     
@@ -32,6 +34,7 @@ import SafariServices
         self.preferredControlTintColor = .tintColor
         self.dismissButtonStyle = .done
         self.modalPresentationStyle = .automatic
+        self.isModalInPresentation = false
         self.overrideUserInterfaceStyle = .unspecified
     }
     
@@ -41,6 +44,7 @@ import SafariServices
         preferredControlTintColor: UIColor? = .tintColor,
         dismissButtonStyle: SFSafariViewController.DismissButtonStyle = .done,
         modalPresentationStyle: UIModalPresentationStyle = .automatic,
+        isModalInPresentation: Bool,
         overrideUserInterfaceStyle: UIUserInterfaceStyle = .unspecified
     ) {
         self.configuration = configuration
@@ -48,6 +52,7 @@ import SafariServices
         self.preferredControlTintColor = preferredControlTintColor
         self.dismissButtonStyle = dismissButtonStyle
         self.modalPresentationStyle = modalPresentationStyle
+        self.isModalInPresentation = isModalInPresentation
         self.overrideUserInterfaceStyle = overrideUserInterfaceStyle
     }
     
@@ -58,6 +63,17 @@ import SafariServices
         default:
             return overrideUserInterfaceStyle
         }
+    }
+}
+
+extension SFSafariViewController {
+    convenience init(url: URL, configuration: SafariConfiguration) {
+        self.init(url: url, configuration: configuration.configuration)
+        self.preferredBarTintColor = configuration.preferredBarTintColor
+        self.preferredControlTintColor = configuration.preferredControlTintColor
+        self.dismissButtonStyle = configuration.dismissButtonStyle
+        self.modalPresentationStyle = configuration.modalPresentationStyle
+        self.isModalInPresentation = configuration.isModalInPresentation
     }
 }
 

@@ -76,12 +76,7 @@ struct SafariViewModifier: ViewModifier {
     func showSafari(with url: URL, on windowScene: UIWindowScene) {
         var config = safariConfiguration ?? SafariConfiguration()
         configure?(&config)
-        
-        let safari = SFSafariViewController(url: url, configuration: config.configuration)
-        safari.preferredBarTintColor = config.preferredBarTintColor
-        safari.preferredControlTintColor = config.preferredControlTintColor
-        safari.dismissButtonStyle = config.dismissButtonStyle
-        safari.overrideUserInterfaceStyle = config.userInterfaceStyle(with: colorScheme)
+        let safari = SFSafariViewController(url: url, configuration: config)
         
         presentingSafari = safariManager.present(safari, on: windowScene, userInterfaceStyle: config.userInterfaceStyle(with: colorScheme))
     }

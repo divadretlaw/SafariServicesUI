@@ -12,7 +12,7 @@ import UIKit
 import Combine
 
 /// Manages the presented `SFSafariViewController`s and their respective `UIWindow`s
-@MainActor final class SafariManager: NSObject, ObservableObject, SFSafariViewControllerDelegate {
+@MainActor final class SafariManager: NSObject, ObservableObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
     static let shared = SafariManager()
     
     var safariDidFinish = PassthroughSubject<SFSafariViewController, Never>()
@@ -25,10 +25,26 @@ import Combine
         userInterfaceStyle: UIUserInterfaceStyle = .unspecified
     ) -> SFSafariViewController {
         safari.delegate = self
+        safari.presentationController?.delegate = self
+
         windowScene.windows.forEach { $0.endEditing(true) }
+
         let (window, viewController) = setup(windowScene: windowScene, userInterfaceStyle: userInterfaceStyle)
         windows[safari] = window
-        viewController.present(safari, animated: true)
+
+        if safari.modalPresentationStyle == .automatic, window.traitCollection.horizontalSizeClass == .regular {
+            safari.modalPresentationStyle = .pageSheet
+        }
+
+        if safari.isModalInPresentation {
+            UIView.animate(withDuration: 0.3) {
+                viewController.present(SafariHostingController(safari: safari), animated: true)
+                window.backgroundColor = UIColor(white: 0.51, alpha: 0.8)
+            }
+        } else {
+            viewController.present(safari, animated: true)
+        }
+
         return safari
     }
     
@@ -44,21 +60,36 @@ import Combine
 
         let viewController = UIViewController()
         window.rootViewController = viewController
-        
         window.makeKeyAndVisible()
-        
+        // Hide the default shadow
+        window.subviews.forEach { $0.isHidden = true }
+
         return (window, viewController)
     }
-    
+
+    private func dismiss(safari: SFSafariViewController) {
+        let window = safari.view.window
+        UIView.animate(withDuration: 0.3) {
+            window?.backgroundColor = nil
+        }
+        window?.resignKey()
+        windows[safari] = nil
+        safariDidFinish.send(safari)
+    }
+
     // MARK: - SFSafariViewControllerDelegate
     
     nonisolated func safariViewControllerDidFinish(_ safari: SFSafariViewController) {
         Task { @MainActor in
-            let window = safari.view.window
-            window?.resignKey()
-            windows[safari] = nil
-            safariDidFinish.send(safari)
+            dismiss(safari: safari)
         }
+    }
+
+    // MARK: - UIAdaptivePresentationControllerDelegate
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        guard let safari = presentationController.presentedViewController as? SFSafariViewController else { return }
+        dismiss(safari: safari)
     }
 }
 
