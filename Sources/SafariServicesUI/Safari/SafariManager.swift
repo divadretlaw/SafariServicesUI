@@ -41,7 +41,7 @@ import Combine
         if safari.isModalInPresentation {
             UIView.defaultAnimation {
                 viewController.present(SafariHostingController(safari: safari), animated: true)
-                window.backgroundColor = UIColor(white: 0.51, alpha: 0.8)
+                window.backgroundColor = UIColor(named: "Shadow", in: .module, compatibleWith: nil)
             }
         } else {
             viewController.present(safari, animated: true)
