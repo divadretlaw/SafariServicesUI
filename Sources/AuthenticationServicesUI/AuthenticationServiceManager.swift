@@ -19,11 +19,11 @@ import AuthenticationServices
     var windowScene: UIWindowScene?
     #endif
     let didFinish = PassthroughSubject<Result<URL, Error>, Never>()
-    
+
     #if canImport(UIKit) && !os(watchOS)
     func createSession(for windowScene: UIWindowScene?, with configuration: AuthenticationSessionConfiguration) {
         self.windowScene = windowScene
-        
+
         let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
             guard let self else { return }
             self.handleCallback(url: url, error: error)
@@ -35,7 +35,7 @@ import AuthenticationServices
         self.session = session
     }
     #endif
-    
+
     func createSession(with configuration: AuthenticationSessionConfiguration) {
         let session = ASWebAuthenticationSession(configuration: configuration) { [weak self] url, error in
             guard let self else { return }
@@ -47,7 +47,7 @@ import AuthenticationServices
         #endif
         self.session = session
     }
-    
+
     func handleCallback(url: URL?, error: (any Error)?) {
         if let error {
             self.didFinish.send(.failure(error))

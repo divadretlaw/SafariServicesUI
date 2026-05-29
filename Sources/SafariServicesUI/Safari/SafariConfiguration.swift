@@ -27,7 +27,7 @@ import SafariServices
     public var isModalInPresentation: Bool
     /// The user interface style adopted by the view controller and all of its children.
     public var overrideUserInterfaceStyle: UIUserInterfaceStyle
-    
+
     init() {
         self.configuration = SFSafariViewController.Configuration()
         self.preferredBarTintColor = nil
@@ -37,7 +37,7 @@ import SafariServices
         self.isModalInPresentation = false
         self.overrideUserInterfaceStyle = .unspecified
     }
-    
+
     public init(
         configuration: SFSafariViewController.Configuration = SFSafariViewController.Configuration(),
         preferredBarTintColor: UIColor? = nil,
@@ -55,7 +55,7 @@ import SafariServices
         self.isModalInPresentation = isModalInPresentation
         self.overrideUserInterfaceStyle = overrideUserInterfaceStyle
     }
-    
+
     func userInterfaceStyle(with colorScheme: ColorScheme) -> UIUserInterfaceStyle {
         switch overrideUserInterfaceStyle {
         case .unspecified:

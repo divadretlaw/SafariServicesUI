@@ -10,47 +10,47 @@ import SwiftUI
 import URLExtensions
 import SafariServices
 
-public extension OpenURLAction.Result {
+@MainActor public extension OpenURLAction.Result {
     /// The handler tries to open the original URL with `SFSafariViewController`.
     ///
     /// - Parameter url: The `URL` that the handler asks `SFSafariViewController` to open.
     ///
     /// If the `URL` cannot be opened by `SFSafariViewController` then the handler
     /// asks the system to open the original URL.
-    @MainActor static func safari(
+    static func safari(
         _ url: URL
     ) -> Self {
         guard url.supportsSafari else {
             // URL doesn't support Safari. Abort.
             return .systemAction
         }
-        
+
         guard let scene = UIApplication.shared.keyWindowScene else {
             // No window scene was found. Abort.
             return .systemAction
         }
-        
+
         let window = scene.windows.first { $0.isKeyWindow } ?? scene.windows.first
-        
+
         guard let rootViewController = window?.rootViewController else {
             // Window has no root view controller. Abort.
             return .systemAction
         }
-        
+
         let safari = SFSafariViewController(url: url)
         if window?.traitCollection.horizontalSizeClass == .regular {
             safari.modalPresentationStyle = .pageSheet
         }
-        
+
         guard rootViewController.presentedViewController == nil else {
             // rootViewController is already presenting, so we show Safari in a window instead
-            return safariWindow(url, in: scene)
+            return .safari(url, in: scene)
         }
-        
+
         rootViewController.present(safari, animated: true)
         return .handled
     }
-    
+
     /// The handler tries to open the original URL with `SFSafariViewController`.
     ///
     /// - Parameters:
@@ -59,7 +59,7 @@ public extension OpenURLAction.Result {
     ///
     /// If the `URL` cannot be opened by `SFSafariViewController` then the handler
     /// asks the system to open the original URL.
-    @MainActor static func safari(
+    static func safari(
         _ url: URL,
         configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
     ) -> Self {
@@ -67,24 +67,24 @@ public extension OpenURLAction.Result {
             // URL doesn't support Safari. Abort.
             return .systemAction
         }
-        
+
         guard let scene = UIApplication.shared.keyWindowScene else {
             // No window scene was found. Abort.
             return .systemAction
         }
-        
+
         let window = scene.windows.first { $0.isKeyWindow } ?? scene.windows.first
-        
+
         guard let rootViewController = window?.rootViewController else {
             // Window has no root view controller. Abort.
             return .systemAction
         }
-        
+
         guard rootViewController.presentedViewController == nil else {
             // rootViewController is already presenting, so we show Safari in a window instead
-            return .safariWindow(url, in: scene, configure: configure)
+            return .safari(url, in: scene, configure: configure)
         }
-        
+
         var config = SafariConfiguration()
         configure(&config)
         let safari = SFSafariViewController(url: url, configuration: config)
@@ -92,97 +92,12 @@ public extension OpenURLAction.Result {
             safari.modalPresentationStyle = .pageSheet
         }
 
-        if safari.isModalInPresentation {
+        guard !safari.isModalInPresentation else {
             // We can only support 'isModalInPresentation' when Safari is in its own window
-            return .safariWindow(url, in: scene, configure: configure)
+            return .safari(url, in: scene, configure: configure)
         }
 
         rootViewController.present(safari, animated: true)
-        return .handled
-    }
-    
-    /// The handler tries to open the original URL with `SFSafariViewController`.
-    ///
-    /// - Parameters:
-    ///     - url: The `URL` that the handler asks `SFSafariViewController` to open.
-    ///     - windowScene: The `UIWindowScene` to show `SFSafariViewController` in.
-    ///
-    /// If the `URL` cannot be opened by `SFSafariViewController` then the handler
-    /// asks the system to open the original URL.
-    @MainActor static func safariWindow(
-        _ url: URL,
-        in windowScene: UIWindowScene?
-    ) -> Self {
-        guard url.supportsSafari else {
-            // URL doesn't support Safari. Abort.
-            return .systemAction
-        }
-        
-        guard let windowScene else {
-            return safari(url)
-        }
-        
-        return safariWindow(url, in: windowScene)
-    }
-    
-    /// The handler tries to open the original URL with `SFSafariViewController`.
-    ///
-    /// - Parameters:
-    ///     - url: The `URL` that the handler asks `SFSafariViewController` to open.
-    ///     - windowScene: The `UIWindowScene` to show `SFSafariViewController` in.
-    ///     - configure: Callback to configure `SFSafariViewController`.
-    ///
-    /// If the `URL` cannot be opened by `SFSafariViewController` then the handler
-    /// asks the system to open the original URL.
-    @MainActor static func safariWindow(
-        _ url: URL,
-        in windowScene: UIWindowScene?,
-        configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
-    ) -> Self {
-        guard url.supportsSafari else {
-            // URL doesn't support Safari. Abort.
-            return .systemAction
-        }
-        
-        guard let windowScene else {
-            return safari(url)
-        }
-        
-        return safariWindow(url, in: windowScene, configure: configure)
-    }
-}
-
-extension OpenURLAction.Result {
-    @MainActor static func safariWindow(
-        _ url: URL,
-        in windowScene: UIWindowScene
-    ) -> Self {
-        guard url.supportsSafari else {
-            // URL doesn't support Safari. Abort.
-            return .systemAction
-        }
-        
-        let safari = SFSafariViewController(url: url)
-        
-        SafariManager.shared.present(safari, on: windowScene)
-        return .handled
-    }
-    
-    @MainActor static func safariWindow(
-        _ url: URL,
-        in windowScene: UIWindowScene,
-        configure: @MainActor @Sendable (inout SafariConfiguration) -> Void
-    ) -> Self {
-        guard url.supportsSafari else {
-            // URL doesn't support Safari. Abort.
-            return .systemAction
-        }
-        
-        var config = SafariConfiguration()
-        configure(&config)
-        let safari = SFSafariViewController(url: url, configuration: config)
-
-        SafariManager.shared.present(safari, on: windowScene, userInterfaceStyle: config.overrideUserInterfaceStyle)
         return .handled
     }
 }
@@ -210,7 +125,7 @@ struct OpenURLActionSafari_Previews: PreviewProvider {
                 }
             }
             .previewDisplayName(".safari")
-        
+
         VStack {
             Text("Sheet Host")
         }
@@ -225,20 +140,11 @@ struct OpenURLActionSafari_Previews: PreviewProvider {
             }
         }
         .previewDisplayName("Safari within Sheet")
-        
-        Preview()
-            .openURL { url, windowScene in
-                .safariWindow(url, in: windowScene) { configuration in
-                    configuration.modalPresentationStyle = .fullScreen
-                    configuration.overrideUserInterfaceStyle = .dark
-                }
-            }
-            .previewDisplayName(".safariWindow")
     }
-    
+
     struct Preview: View {
         @Environment(\.openURL) private var openURL
-        
+
         var body: some View {
             NavigationView {
                 List {

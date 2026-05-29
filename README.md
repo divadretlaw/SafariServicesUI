@@ -36,7 +36,7 @@ You can also provide an optional configuration
 })
 ```
 
-#### `safariWindow(_:in:)`
+#### `safari(_:in:)`
 
 Use `SFSafariViewController` as an action in `openURL` on a specific window scene.
 
@@ -48,7 +48,7 @@ struct MyApp: App {
             WindowSceneReader { windowScene in
                 ContentView()
                     .environment(\.openURL, OpenURLAction { url in
-                    .safariWindow(url, in: windowScene)
+                    .safari(url, in: windowScene)
                 })
             }
         }

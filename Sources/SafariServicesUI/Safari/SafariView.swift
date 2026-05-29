@@ -8,13 +8,6 @@
 import SwiftUI
 import SafariServices
 
-/// Wrap `SFSafariViewController` in `UIHostingController` to support `isModalInPresentation`
-final class SafariHostingController: UIHostingController<SafariView> {
-    convenience init(safari: SFSafariViewController) {
-        self.init(rootView: SafariView(safari: safari))
-    }
-}
-
 /// SwiftUI `SFSafariViewController` wrapper
 struct SafariView: View {
     let safari: SFSafariViewController
@@ -36,7 +29,7 @@ private struct SafariRepresentable: UIViewControllerRepresentable {
         self.safari = safari
     }
 
-    func makeUIViewController(context: Context) ->SFSafariViewController {
+    func makeUIViewController(context: Context) -> SFSafariViewController {
         safari
     }
 

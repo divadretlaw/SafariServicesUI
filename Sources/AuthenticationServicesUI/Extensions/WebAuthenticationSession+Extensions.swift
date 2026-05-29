@@ -11,7 +11,7 @@ import AuthenticationServices
 @available(iOS 16.4, macOS 13.3, watchOS 9.4, tvOS 16.4, *)
 extension WebAuthenticationSession {
     /// Start a web authentication session.
-    /// 
+    ///
     /// - Parameter configuration: The configuration to authenticate with.
     ///
     /// - Returns: The URL returned by the authentication provider.

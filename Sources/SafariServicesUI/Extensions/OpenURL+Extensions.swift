@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-public extension View {
+@MainActor public extension View {
     /// Registers a handler to invoke when a open action is triggered.
     ///
     /// - Parameter handler: The closure to run for the given `URL`.
     ///   The closure takes a URL as input, and returns a `OpenURLAction.Result`
     ///   that indicates the outcome of the action.
-    func openURL(handler: @escaping (URL) -> OpenURLAction.Result) -> some View {
+    @preconcurrency func openURL(handler: @escaping (URL) -> OpenURLAction.Result) -> some View {
         environment(\.openURL, OpenURLAction(handler: handler))
     }
 }
@@ -21,22 +21,22 @@ public extension View {
 #if os(iOS) || os(tvOS) || os(visionOS)
 import WindowReader
 
-public extension View {
+@MainActor public extension View {
     /// Registers a handler to invoke when a view wants to open a url.
     ///
     /// - Parameter handler: The closure to run for the given `URL` and `UIWindowScene`.
     ///   The closure takes a URL as input, and returns a `OpenURLAction.Result`
     ///   that indicates the outcome of the action.
-    func openURL(handler: @escaping (URL, UIWindowScene?) -> OpenURLAction.Result) -> some View {
+    @preconcurrency func openURL(handler: @escaping (URL, UIWindowScene?) -> OpenURLAction.Result) -> some View {
         modifier(WindowSceneOpenURL(handler: handler))
     }
 }
 
 struct WindowSceneOpenURL: ViewModifier {
-    var handler: (URL, UIWindowScene?) -> OpenURLAction.Result
-    
+    let handler: (URL, UIWindowScene?) -> OpenURLAction.Result
+
     @State private var windowScene: UIWindowScene?
-    
+
     func body(content: Content) -> some View {
         content
             .onWindowChange(initial: true) { window in

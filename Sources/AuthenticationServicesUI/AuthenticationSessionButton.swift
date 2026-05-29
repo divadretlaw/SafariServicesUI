@@ -13,9 +13,9 @@ public struct AuthenticationSessionButton<Label>: View where Label: View {
     let configuration: AuthenticationSessionConfiguration
     let label: Label
     let completionHandler: (Result<URL, Error>) -> Void
-    
+
     @State private var isPresented = false
-    
+
     /// Creates a button for a authentication session
     /// - Parameters:
     ///   - configuration: The configuration to use for the authentication session.
@@ -30,7 +30,7 @@ public struct AuthenticationSessionButton<Label>: View where Label: View {
         self.label = label()
         self.completionHandler = onCompletion
     }
-    
+
     public var body: some View {
         Button {
             isPresented = true
@@ -61,7 +61,7 @@ public extension AuthenticationSessionButton where Label == Text {
         self.label = title
         self.completionHandler = onCompletion
     }
-    
+
     /// Creates a button for a authentication session
     /// - Parameters:
     ///   - titleKey: The key for the button's localized title, that describes the purpose of the button's `action`.
@@ -76,7 +76,7 @@ public extension AuthenticationSessionButton where Label == Text {
         self.label = Text(titleKey)
         self.completionHandler = onCompletion
     }
-    
+
     /// Creates a button for a authentication session
     /// - Parameters:
     ///   - title: A string that describes the purpose of the button's `action`.

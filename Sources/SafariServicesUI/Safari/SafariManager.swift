@@ -14,10 +14,10 @@ import Combine
 /// Manages the presented `SFSafariViewController`s and their respective `UIWindow`s
 @MainActor final class SafariManager: NSObject, ObservableObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
     static let shared = SafariManager()
-    
+
     let safariDidFinish = PassthroughSubject<SFSafariViewController, Never>()
     private var windows: [SFSafariViewController: UIWindow] = [:]
-    
+
     @discardableResult
     func present(
         _ safari: SFSafariViewController,
@@ -31,7 +31,7 @@ import Combine
             window.endEditing(true)
         }
 
-        let (window, viewController) = setup(windowScene: windowScene, userInterfaceStyle: userInterfaceStyle)
+        let (window, rootViewController) = setup(windowScene: windowScene, userInterfaceStyle: userInterfaceStyle)
         windows[safari] = window
 
         if safari.modalPresentationStyle == .automatic, window.traitCollection.horizontalSizeClass == .regular {
@@ -40,22 +40,24 @@ import Combine
 
         if safari.isModalInPresentation {
             UIView.defaultAnimation {
-                viewController.present(SafariHostingController(safari: safari), animated: true)
+                /// Wrap `SFSafariViewController` in `UIHostingController` to support `isModalInPresentation`
+                let viewController = UIHostingController(rootView: SafariView(safari: safari))
+                rootViewController.present(viewController, animated: true)
                 window.backgroundColor = UIColor(named: "Shadow", in: .module, compatibleWith: nil)
             }
         } else {
-            viewController.present(safari, animated: true)
+            rootViewController.present(safari, animated: true)
         }
 
         return safari
     }
-    
+
     private func setup(
         windowScene: UIWindowScene,
         userInterfaceStyle: UIUserInterfaceStyle
     ) -> (window: UIWindow, viewController: UIViewController) {
         let windowLevel = windowScene.nextWindowLevel()
-        
+
         let window = UIWindow(windowScene: windowScene)
         window.windowLevel = windowLevel
         window.overrideUserInterfaceStyle = userInterfaceStyle
@@ -82,7 +84,7 @@ import Combine
     }
 
     // MARK: - SFSafariViewControllerDelegate
-    
+
     nonisolated func safariViewControllerDidFinish(_ safari: SFSafariViewController) {
         Task { @MainActor in
             dismiss(safari: safari)

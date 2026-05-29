@@ -15,7 +15,7 @@ public struct AuthenticationSessionConfiguration: Sendable {
     let callback: Callback?
     let additionalHeaderFields: [String: String]?
     let prefersEphemeralWebBrowserSession: Bool
-    
+
     /// Create a authentication session configuration
     /// - Parameters:
     ///   - url: A URL with the http or https scheme pointing to the authentication webpage.
@@ -35,7 +35,7 @@ public struct AuthenticationSessionConfiguration: Sendable {
         self.additionalHeaderFields = nil
         self.prefersEphemeralWebBrowserSession = prefersEphemeralWebBrowserSession
     }
-    
+
     /// Create a authentication session configuration
     /// - Parameters:
     ///   - url: A URL with the http or https scheme pointing to the authentication webpage.
@@ -69,23 +69,23 @@ public struct AuthenticationSessionConfiguration: Sendable {
         ///             The host must be associated with the app using associated web credentials domains.
         ///     - path: The path that the app expects in the callback URL.
         case https(host: String, path: String)
-        
+
         var rawValue: String? {
             switch self {
-            case let .customScheme(customScheme):
+            case .customScheme(let customScheme):
                 return customScheme
             case .https:
                 return nil
             }
         }
-        
+
         @available(iOS 17.4, macOS 14.4, tvOS 17.4, watchOS 10.4, visionOS 1.1, *)
         /// Create the underlying `ASWebAuthenticationSession.Callback`
         func create() -> ASWebAuthenticationSession.Callback {
             switch self {
-            case let .customScheme(customScheme):
+            case .customScheme(let customScheme):
                 return .customScheme(customScheme)
-            case let .https(host, path):
+            case .https(let host, let path):
                 return .https(host: host, path: path)
             }
         }
