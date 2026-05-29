@@ -82,30 +82,22 @@ struct SafariViewModifier: ViewModifier {
     }
 }
 
-struct SafariViewModifier_Previews: PreviewProvider {
-    static var previews: some View {
-        Preview()
-    }
-
-    struct Preview: View {
-        @State private var url: URL?
-
-        var body: some View {
-            NavigationView {
-                List {
-                    Button {
-                        url = URL(string: "https://davidwalter.at")
-                    } label: {
-                        Text("Show Safari")
-                    }
-                }
-                .navigationTitle("Preview")
-                .safari(url: $url) { configuration in
-                    configuration.overrideUserInterfaceStyle = .dark
-                }
+@available(iOS 17, *)
+#Preview {
+    @Previewable @State var url: URL?
+    NavigationView {
+        List {
+            Button {
+                url = URL(string: "https://davidwalter.at")
+            } label: {
+                Text("Show Safari")
             }
-            .navigationViewStyle(.stack)
+        }
+        .navigationTitle("Preview")
+        .safari(url: $url) { configuration in
+            configuration.overrideUserInterfaceStyle = .dark
         }
     }
+    .navigationViewStyle(.stack)
 }
 #endif

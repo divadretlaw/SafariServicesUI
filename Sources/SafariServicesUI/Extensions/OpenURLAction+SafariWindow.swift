@@ -83,52 +83,31 @@ import SafariServices
     }
 }
 
-struct OpenURLActionSafariWindow_Previews: PreviewProvider {
-    static var previews: some View {
-        Preview()
-            .openURL { url, windowScene in
-                .safari(url, in: windowScene) { configuration in
-                    configuration.modalPresentationStyle = .fullScreen
-                    configuration.overrideUserInterfaceStyle = .dark
-                }
-            }
-            .previewDisplayName(".safariWindow")
-
-        VStack {
-            Text("Sheet Host")
-        }
-        .sheet(isPresented: .constant(true)) {
-            Preview()
-                .interactiveDismissDisabled()
-        }
+#if DEBUG
+#Preview("Safari in window") {
+    Preview()
         .openURL { url, windowScene in
             .safari(url, in: windowScene) { configuration in
                 configuration.modalPresentationStyle = .fullScreen
                 configuration.overrideUserInterfaceStyle = .dark
             }
         }
-        .previewDisplayName("Safari within Sheet")
+}
+
+#Preview("Safari within Sheet") {
+    VStack {
+        Text("Sheet Host")
     }
-
-    struct Preview: View {
-        @Environment(\.openURL) private var openURL
-
-        var body: some View {
-            NavigationView {
-                List {
-                    Button {
-                        guard let url = URL(string: "https://davidwalter.at") else {
-                            return
-                        }
-                        openURL(url)
-                    } label: {
-                        Text("Show Safari")
-                    }
-                }
-                .navigationTitle("Preview")
-            }
-            .navigationViewStyle(.stack)
+    .sheet(isPresented: .constant(true)) {
+        Preview()
+            .interactiveDismissDisabled()
+    }
+    .openURL { url, windowScene in
+        .safari(url, in: windowScene) { configuration in
+            configuration.modalPresentationStyle = .fullScreen
+            configuration.overrideUserInterfaceStyle = .dark
         }
     }
 }
+#endif
 #endif
