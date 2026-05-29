@@ -73,7 +73,7 @@ import Combine
         return (window, viewController)
     }
 
-    private func dismiss(safari: SFSafariViewController) {
+    func dismiss(safari: SFSafariViewController) {
         let window = safari.view.window
         UIView.defaultAnimation {
             window?.backgroundColor = nil

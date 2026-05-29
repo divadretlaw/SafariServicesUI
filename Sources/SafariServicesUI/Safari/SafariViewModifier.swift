@@ -40,9 +40,9 @@ import SafariServices
     }
 }
 
-struct SafariViewModifier: ViewModifier {
+private struct SafariViewModifier: ViewModifier {
     @Binding var url: URL?
-    var configure: ((inout SafariConfiguration) -> Void)?
+    let configure: ((inout SafariConfiguration) -> Void)?
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.safariConfiguration) private var safariConfiguration
@@ -56,16 +56,14 @@ struct SafariViewModifier: ViewModifier {
             .background {
                 WindowSceneReader { windowScene in
                     Color.clear
-                        .onChange(of: url) { url in
+                        .task(id: url) {
+                            await dismiss()
                             guard let url else { return }
-                            showSafari(with: url, on: windowScene)
-                        }
-                        .onAppear {
-                            guard let url else { return }
-                            showSafari(with: url, on: windowScene)
+                            show(with: url, on: windowScene)
                         }
                         .onReceive(safariManager.safariDidFinish) { safari in
                             if safari == presentingSafari {
+                                presentingSafari = nil
                                 url = nil
                             }
                         }
@@ -73,12 +71,25 @@ struct SafariViewModifier: ViewModifier {
             }
     }
 
-    func showSafari(with url: URL, on windowScene: UIWindowScene) {
+    func show(with url: URL, on windowScene: UIWindowScene) {
+        guard url.supportsSafari else { return }
+
         var config = safariConfiguration ?? SafariConfiguration()
         configure?(&config)
         let safari = SFSafariViewController(url: url, configuration: config)
 
         presentingSafari = safariManager.present(safari, on: windowScene, userInterfaceStyle: config.userInterfaceStyle(with: colorScheme))
+    }
+
+    func dismiss() async {
+        guard let safari = presentingSafari else { return }
+        presentingSafari = nil
+        await withCheckedContinuation { continuation in
+            safari.dismiss(animated: true) {
+                continuation.resume()
+            }
+        }
+        safariManager.dismiss(safari: safari)
     }
 }
 
